@@ -8,8 +8,13 @@ import { initializeFormatting } from './formatting.js';
 
 // 章节文件列表
 const CHAPTER_FILES = [
-    'sections/chapter1绪论.html',
-    // 可以添加更多章节文件
+    'sections/chapter1_研究背景与意义.html',
+    'sections/chapter2_国内外研究现状.html',
+    'sections/chapter3_研究内容与方案.html',
+    'sections/chapter4_实施计划.html',
+    'sections/chapter5_预期成果.html',
+    'sections/chapter6_参考文献.html',
+    // 'sections/chapter1绪论.html', // 原始文件，已拆分为上述六个章节
 ];
 
 // 页面加载完成后初始化
