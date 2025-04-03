@@ -1,12 +1,24 @@
 /**
  * 分页模块 - 负责将论文内容分割成A4页面
+ * 优化版本：更精确的分页算法和更好的内容流动
  */
 
 // A4页面内容区域高度（减去页边距）
 const PAGE_CONTENT_HEIGHT = 247; // 单位: mm，297mm - 25mm*2
 
 // 像素到毫米的转换比例（取决于浏览器的DPI设置）
-const PX_TO_MM_RATIO = 3.78; // 恢复原始比例，配合CSS中的aspect-ratio属性使用
+const PX_TO_MM_RATIO = 3.78; // 配合CSS中的aspect-ratio属性使用
+
+// 元素类型权重，用于决定是否应该在新页面开始
+const ELEMENT_WEIGHTS = {
+    'H1': 100,  // 一级标题总是新页开始
+    'H2': 90,   // 二级标题尽量新页开始
+    'H3': 70,   // 三级标题如果当前页已经过半则新页开始
+    'H4': 40,   // 四级标题不强制新页，但有一定权重
+    'FIGURE': 85, // 图片尽量新页开始
+    'TABLE': 85,  // 表格尽量新页开始
+    'DIV.math-formula': 60 // 数学公式如果较大则考虑新页
+};
 
 /**
  * 生成页面
@@ -20,7 +32,7 @@ export function generatePages(contentNode, container) {
     // 清空容器
     container.innerHTML = '';
     
-    // 简化版分页算法 - 每页固定字符数
+    // 克隆内容以便操作
     const content = contentNode.cloneNode(true);
     
     // 创建第一页
@@ -33,20 +45,28 @@ export function generatePages(contentNode, container) {
     const title = document.createElement('h1');
     title.textContent = '基于改进遗传算法的土石方调运优化研究';
     title.style.textAlign = 'center';
-    title.style.marginBottom = '20px';
+    title.style.marginBottom = '25px';
     currentPageContent.appendChild(title);
     
     // 添加作者信息
     const authorInfo = document.createElement('div');
     authorInfo.innerHTML = `
-        <div class="author" style="text-align: center; margin-bottom: 5px;">张三</div>
-        <div class="affiliation" style="text-align: center; margin-bottom: 5px;">某某大学水利与环境工程学院</div>
-        <div class="date" style="text-align: center; margin-bottom: 20px;">2025年4月</div>
+        <div class="author" style="text-align: center; margin-bottom: 8px;">张三</div>
+        <div class="affiliation" style="text-align: center; margin-bottom: 8px;">某某大学水利与环境工程学院</div>
+        <div class="date" style="text-align: center; margin-bottom: 30px;">2025年4月</div>
     `;
     currentPageContent.appendChild(authorInfo);
     
+    // 创建一个临时容器来测量内容高度
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.visibility = 'hidden';
+    tempContainer.style.width = `calc(var(--page-width) - var(--margin-left) - var(--margin-right))`;
+    document.body.appendChild(tempContainer);
+    
     // 将内容节点附加到页面
     const children = Array.from(content.childNodes);
+    let currentPageHeight = estimateContentHeight(currentPageContent);
     
     // 处理每个子节点
     for (let i = 0; i < children.length; i++) {
@@ -57,48 +77,144 @@ export function generatePages(contentNode, container) {
             continue;
         }
         
+        // 克隆节点以便测量
+        const clonedNode = child.cloneNode(true);
+        
+        // 测量节点高度
+        tempContainer.innerHTML = '';
+        tempContainer.appendChild(clonedNode);
+        const elementHeight = tempContainer.offsetHeight / PX_TO_MM_RATIO;
+        
         // 判断是否需要新建页面
         if (child.nodeType === Node.ELEMENT_NODE) {
-            // 如果是标题元素且当前页面已有内容，创建新页面
-            if (['H1', 'H2', 'H3'].includes(child.tagName) && currentPageContent.childNodes.length > 0) {
-                // 检查当前页面内容数量
-                if (currentPageContent.childNodes.length >= 10) {
-                    pageCount++;
-                    currentPage = createNewPage(pageCount);
-                    container.appendChild(currentPage);
-                    currentPageContent = currentPage.querySelector('.page-content');
-                }
-            }
+            const tagName = child.tagName;
+            const elementClass = child.className || '';
+            const elementId = `${tagName}${elementClass ? '.' + elementClass : ''}`;
+            const elementWeight = ELEMENT_WEIGHTS[tagName] || ELEMENT_WEIGHTS[elementId] || 0;
             
-            // 如果是表格或图片，单独占一页
-            if (['TABLE', 'FIGURE'].includes(child.tagName) && currentPageContent.childNodes.length > 0) {
+            // 根据元素类型和当前页面已用空间决定是否需要新页面
+            const pageFullnessRatio = currentPageHeight / PAGE_CONTENT_HEIGHT;
+            const shouldStartNewPage = shouldElementStartNewPage(tagName, elementClass, pageFullnessRatio, elementHeight);
+            
+            if (shouldStartNewPage && currentPageContent.childNodes.length > 2) {
                 pageCount++;
                 currentPage = createNewPage(pageCount);
                 container.appendChild(currentPage);
                 currentPageContent = currentPage.querySelector('.page-content');
+                currentPageHeight = 0;
             }
+        }
+        
+        // 检查元素是否会导致页面溢出
+        if (currentPageHeight + elementHeight > PAGE_CONTENT_HEIGHT) {
+            // 创建新页面
+            pageCount++;
+            currentPage = createNewPage(pageCount);
+            container.appendChild(currentPage);
+            currentPageContent = currentPage.querySelector('.page-content');
+            currentPageHeight = 0;
         }
         
         // 添加元素到当前页面
         currentPageContent.appendChild(child.cloneNode(true));
-        
-        // 每添加几个元素后检查是否需要新页面
-        if (i % 5 === 0 && i > 0) {
-            // 检查当前页面内容数量
-            if (currentPageContent.childNodes.length >= 15) {
-                pageCount++;
-                currentPage = createNewPage(pageCount);
-                container.appendChild(currentPage);
-                currentPageContent = currentPage.querySelector('.page-content');
-            }
-        }
+        currentPageHeight += elementHeight;
     }
+    
+    // 移除临时容器
+    document.body.removeChild(tempContainer);
     
     // 更新总页数显示
     document.getElementById('total-pages').textContent = pageCount;
     console.log(`生成了 ${pageCount} 页内容`);
     
+    // 添加页面跳转事件监听
+    addPageNavigationListeners();
+    
     return pageCount;
+}
+
+/**
+ * 估算内容高度
+ * @param {HTMLElement} element - 要估算高度的元素
+ * @returns {number} - 估算的高度（毫米）
+ */
+function estimateContentHeight(element) {
+    if (!element || !element.offsetHeight) return 0;
+    return element.offsetHeight / PX_TO_MM_RATIO;
+}
+
+/**
+ * 判断元素是否应该在新页面开始
+ * @param {string} tagName - 元素标签名
+ * @param {string} className - 元素类名
+ * @param {number} pageFullnessRatio - 当前页面已用空间比例
+ * @param {number} elementHeight - 元素高度
+ * @returns {boolean} - 是否应该在新页面开始
+ */
+function shouldElementStartNewPage(tagName, className, pageFullnessRatio, elementHeight) {
+    // 一级标题总是新页开始
+    if (tagName === 'H1') return true;
+    
+    // 二级标题，如果当前页已经使用了超过30%的空间，则新页开始
+    if (tagName === 'H2' && pageFullnessRatio > 0.3) return true;
+    
+    // 三级标题，如果当前页已经使用了超过60%的空间，则新页开始
+    if (tagName === 'H3' && pageFullnessRatio > 0.6) return true;
+    
+    // 图片和表格，如果当前页已经使用了超过40%的空间，则新页开始
+    if ((tagName === 'FIGURE' || tagName === 'TABLE') && pageFullnessRatio > 0.4) return true;
+    
+    // 数学公式，如果是大型公式且当前页已经使用了超过50%的空间，则新页开始
+    if (tagName === 'DIV' && className.includes('math-formula') && elementHeight > 30 && pageFullnessRatio > 0.5) return true;
+    
+    return false;
+}
+
+/**
+ * 添加页面导航事件监听
+ */
+function addPageNavigationListeners() {
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    const currentPageIndicator = document.getElementById('current-page');
+    const totalPages = parseInt(document.getElementById('total-pages').textContent, 10);
+    
+    let currentPageIndex = 1;
+    updatePageView();
+    
+    prevButton.addEventListener('click', () => {
+        if (currentPageIndex > 1) {
+            currentPageIndex--;
+            updatePageView();
+        }
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (currentPageIndex < totalPages) {
+            currentPageIndex++;
+            updatePageView();
+        }
+    });
+    
+    function updatePageView() {
+        // 更新页码显示
+        currentPageIndicator.textContent = currentPageIndex;
+        
+        // 更新页面可见性
+        const pages = document.querySelectorAll('.page');
+        pages.forEach((page, index) => {
+            if (index + 1 === currentPageIndex) {
+                page.style.display = 'block';
+                page.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                page.style.display = 'none';
+            }
+        });
+        
+        // 更新按钮状态
+        prevButton.disabled = currentPageIndex === 1;
+        nextButton.disabled = currentPageIndex === totalPages;
+    }
 }
 
 /**
