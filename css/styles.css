@@ -1,6 +1,6 @@
 :root {
     /* 计数器初始化 */
-    counter-reset: h1counter;
+    counter-reset: h1counter h2counter h3counter;
     /* 颜色变量 */
     --primary-color: #333;
     --secondary-color: #555;
@@ -31,7 +31,7 @@
     /* 字号变量 */
     --font-size-h1: 14pt; /* 四号字 */
     --font-size-h2: 12pt; /* 小四号字 */
-    --font-size-h3: 16pt; /* 三号字 */
+    --font-size-h3: 10.5pt; /* 五号字 */
     --font-size-body: 12pt; /* 小四号字 */
     
     /* 间距变量 */
@@ -256,57 +256,157 @@ body {
 
 /* 各级标题样式 */
 
-/* 一级标题：黑体四号字，居中对齐，样式是一、标题名 */
+/* 一级标题：黑体小三号字，居中对齐，样式是一、标题名 */
 .content-page h1 {
     font-family: var(--font-title);
-    font-size: var(--font-size-h1);
+    font-size: 15pt; /* 小三号字 */
     font-weight: bold;
     text-align: center;
     margin: 1.5em 0 1em 0;
     counter-reset: h2counter;
     counter-increment: h1counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .content-page h1::before {
     content: counter(h1counter, cjk-ideographic) "、";
-    margin-right: 0.5em;
     font-weight: bold;
 }
 
-/* 二级标题：楷体小四字，靠左对齐，样式是 1.1 标题名 */
+/* 二级标题：黑体四号字，左对齐，样式是（一）标题名 */
 .content-page h2 {
-    font-family: var(--font-kai);
-    font-size: var(--font-size-h2);
+    font-family: var(--font-title);
+    font-size: var(--font-size-h1); /* 四号字 */
     font-weight: bold;
     text-align: left;
     margin: 1.2em 0 0.8em 0;
     counter-reset: h3counter;
+    counter-increment: h2counter;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .content-page h2::before {
-    content: attr(data-section) "." attr(data-subsection) " ";
+    content: "（" counter(h2counter, cjk-ideographic) "）";
+    margin-right: 0.5em;
+    font-weight: bold;
 }
 
-/* 三级标题：宋体三号字，首行缩进1字符，样式是 1.1.1 标题名 */
+/* 三级标题：黑体小四号字，左对齐，样式是 1. 标题名 */
 .content-page h3 {
-    font-family: var(--font-body);
-    font-size: var(--font-size-h3);
+    font-family: var(--font-title);
+    font-size: var(--font-size-h2); /* 小四号字 */
     font-weight: bold;
     text-align: left;
     margin: 1em 0 0.6em 0;
     text-indent: 1em;
+    counter-increment: h3counter;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .content-page h3::before {
-    content: attr(data-section) "." attr(data-subsection) "." attr(data-subsubsection) " ";
+    content: counter(h3counter) ". ";
+    margin-right: 0.5em;
+    font-weight: bold;
 }
 
-/* 正文：宋体小四号字，首行缩进两字符。1.5倍行距 */
+/* 正文样式设置 */
 .content-page p {
     font-family: var(--font-body);
     font-size: var(--font-size-body);
     text-indent: 2em;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    margin-bottom: 0;
+    margin-top: 0;
+    display: block;
+}
+
+/* 强制所有空白元素不影响行距 */
+.content-page br, 
+.content-page p:empty {
+    display: none;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* 强制所有段落之间没有额外的间距 */
+.content-page p + p {
+    margin-top: 0 !important;
+}
+
+/* 消除所有段落之间的空白行影响 */
+.content-page br {
+    display: none;
+    line-height: 0;
+    height: 0;
+}
+
+/* 特殊处理带有strong标签的段落 */
+.content-page p strong {
+    line-height: 1.5;
+    display: inline;
+    vertical-align: baseline;
+}
+
+/* 强制所有段落之间没有额外的间距 */
+.content-page p {
+    margin-bottom: 0 !important;
+}
+
+/* 强制标题后的段落没有额外的间距 */
+.content-page h1 + p,
+.content-page h2 + p,
+.content-page h3 + p {
+    margin-top: 0 !important;
+}
+
+/* 特别处理研究内容部分 - 使用类选择器而非:contains */
+.content-page h2 + p + p {
+    margin-top: 0 !important;
+}
+
+/* 有序列表样式 */
+.content-page ol {
+    padding-left: 2em;
     margin-bottom: 0.8em;
+    line-height: 1.5;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-align: left;
+}
+
+.content-page ol li {
+    position: relative;
+    text-indent: 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* 无序列表样式 */
+.content-page ul {
+    padding-left: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-align: left;
+}
+
+.content-page ul li {
+    position: relative;
+    text-indent: 0;
+    margin-bottom: 0;
     line-height: 1.5;
 }
 
