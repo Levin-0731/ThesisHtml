@@ -9,8 +9,6 @@ import { initializeFormatting } from './formatting.js';
 // 章节文件列表
 const CHAPTER_FILES = [
     'sections/chapter1绪论.html',
-    'sections/chapter4.html',
-    'sections/chapter5.html',
     // 可以添加更多章节文件
 ];
 

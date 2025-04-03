@@ -21,52 +21,51 @@ const ELEMENT_WEIGHTS = {
 };
 
 /**
- * 生成页面
+ * 生成内容（支持分页和滚动）
  * @param {Node} contentNode - 论文内容节点
- * @param {HTMLElement} container - 页面容器
+ * @param {HTMLElement} container - 内容容器
  * @returns {number} - 生成的页面数量
  */
 export function generatePages(contentNode, container) {
-    console.log('开始生成页面', contentNode);
+    console.log('开始生成内容', contentNode);
     
     // 清空容器
     container.innerHTML = '';
     
-    // 克隆内容以便操作
-    const content = contentNode.cloneNode(true);
+    // 创建内容容器（支持滚动）
+    const scrollableContainer = document.createElement('div');
+    scrollableContainer.className = 'scrollable-content';
+    container.appendChild(scrollableContainer);
     
     // 创建第一页
     let pageCount = 1;
-    let currentPage = createNewPage(pageCount);
-    container.appendChild(currentPage);
-    let currentPageContent = currentPage.querySelector('.page-content');
+    let currentPage = createPageElement(pageCount);
+    scrollableContainer.appendChild(currentPage);
     
-    // 将标题添加到第一页
+    // 添加标题（第一页）
     const title = document.createElement('h1');
     title.textContent = '基于改进遗传算法的土石方调运优化研究';
     title.style.textAlign = 'center';
     title.style.marginBottom = '25px';
-    currentPageContent.appendChild(title);
+    title.id = 'main-title';
+    currentPage.appendChild(title);
     
-    // 添加作者信息
+    // 添加作者信息（第一页）
     const authorInfo = document.createElement('div');
     authorInfo.innerHTML = `
         <div class="author" style="text-align: center; margin-bottom: 8px;">张三</div>
         <div class="affiliation" style="text-align: center; margin-bottom: 8px;">某某大学水利与环境工程学院</div>
         <div class="date" style="text-align: center; margin-bottom: 30px;">2025年4月</div>
     `;
-    currentPageContent.appendChild(authorInfo);
+    currentPage.appendChild(authorInfo);
     
-    // 创建一个临时容器来测量内容高度
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.visibility = 'hidden';
-    tempContainer.style.width = `calc(var(--page-width) - var(--margin-left) - var(--margin-right))`;
-    document.body.appendChild(tempContainer);
+    // 估算已使用的高度
+    let usedHeight = estimateContentHeight(title) + estimateContentHeight(authorInfo);
+    const maxPageHeight = PAGE_CONTENT_HEIGHT; // 页面最大高度（毫米）
     
-    // 将内容节点附加到页面
+    // 克隆内容
+    const content = contentNode.cloneNode(true);
     const children = Array.from(content.childNodes);
-    let currentPageHeight = estimateContentHeight(currentPageContent);
     
     // 处理每个子节点
     for (let i = 0; i < children.length; i++) {
@@ -77,58 +76,42 @@ export function generatePages(contentNode, container) {
             continue;
         }
         
-        // 克隆节点以便测量
-        const clonedNode = child.cloneNode(true);
-        
-        // 测量节点高度
-        tempContainer.innerHTML = '';
-        tempContainer.appendChild(clonedNode);
-        const elementHeight = tempContainer.offsetHeight / PX_TO_MM_RATIO;
-        
-        // 判断是否需要新建页面
+        // 处理元素节点
         if (child.nodeType === Node.ELEMENT_NODE) {
-            const tagName = child.tagName;
-            const elementClass = child.className || '';
-            const elementId = `${tagName}${elementClass ? '.' + elementClass : ''}`;
-            const elementWeight = ELEMENT_WEIGHTS[tagName] || ELEMENT_WEIGHTS[elementId] || 0;
-            
-            // 根据元素类型和当前页面已用空间决定是否需要新页面
-            const pageFullnessRatio = currentPageHeight / PAGE_CONTENT_HEIGHT;
-            const shouldStartNewPage = shouldElementStartNewPage(tagName, elementClass, pageFullnessRatio, elementHeight);
-            
-            if (shouldStartNewPage && currentPageContent.childNodes.length > 2) {
-                pageCount++;
-                currentPage = createNewPage(pageCount);
-                container.appendChild(currentPage);
-                currentPageContent = currentPage.querySelector('.page-content');
-                currentPageHeight = 0;
+            // 给标题元素添加ID，便于目录跳转
+            if (['H1', 'H2', 'H3', 'H4'].includes(child.tagName) && !child.id) {
+                child.id = 'heading-' + Math.random().toString(36).substr(2, 9);
             }
+            
+            // 克隆当前节点
+            const clonedNode = child.cloneNode(true);
+            const elementHeight = getEstimatedHeight(clonedNode);
+            
+            // 检查是否需要创建新页面
+            if (shouldStartNewPage(child.tagName, usedHeight, elementHeight, maxPageHeight)) {
+                // 创建新页面
+                pageCount++;
+                currentPage = createPageElement(pageCount);
+                scrollableContainer.appendChild(currentPage);
+                usedHeight = 0;
+            }
+            
+            // 添加元素到当前页面
+            currentPage.appendChild(clonedNode);
+            usedHeight += elementHeight;
         }
-        
-        // 检查元素是否会导致页面溢出
-        if (currentPageHeight + elementHeight > PAGE_CONTENT_HEIGHT) {
-            // 创建新页面
-            pageCount++;
-            currentPage = createNewPage(pageCount);
-            container.appendChild(currentPage);
-            currentPageContent = currentPage.querySelector('.page-content');
-            currentPageHeight = 0;
-        }
-        
-        // 添加元素到当前页面
-        currentPageContent.appendChild(child.cloneNode(true));
-        currentPageHeight += elementHeight;
     }
     
-    // 移除临时容器
-    document.body.removeChild(tempContainer);
+    // 添加页码到每个页面
+    addPageNumbers(scrollableContainer);
+    
+    console.log(`内容生成完成，共 ${pageCount} 页`);
     
     // 更新总页数显示
-    document.getElementById('total-pages').textContent = pageCount;
-    console.log(`生成了 ${pageCount} 页内容`);
-    
-    // 添加页面跳转事件监听
-    addPageNavigationListeners();
+    const totalPagesElement = document.getElementById('total-pages');
+    if (totalPagesElement) {
+        totalPagesElement.textContent = pageCount;
+    }
     
     return pageCount;
 }
@@ -141,6 +124,106 @@ export function generatePages(contentNode, container) {
 function estimateContentHeight(element) {
     if (!element || !element.offsetHeight) return 0;
     return element.offsetHeight / PX_TO_MM_RATIO;
+}
+
+/**
+ * 获取元素的估算高度
+ * @param {HTMLElement} element - 要估算高度的元素
+ * @returns {number} - 估算的高度（毫米）
+ */
+function getEstimatedHeight(element) {
+    // 根据元素类型返回预估高度
+    switch (element.tagName) {
+        case 'H1':
+            return 15; // 一级标题高度约为15mm
+        case 'H2':
+            return 12; // 二级标题高度约为12mm
+        case 'H3':
+            return 10; // 三级标题高度约为10mm
+        case 'H4':
+        case 'H5':
+        case 'H6':
+            return 8;  // 其他标题高度约为8mm
+        case 'P':
+            return 8 * Math.ceil(element.textContent.length / 80); // 段落高度估算
+        case 'UL':
+        case 'OL':
+            return 8 * element.querySelectorAll('li').length; // 列表高度估算
+        case 'TABLE':
+            return 20 + 8 * element.querySelectorAll('tr').length; // 表格高度估算
+        case 'FIGURE':
+            return 40; // 图片高度预估
+        case 'PRE':
+            return 15 + 5 * (element.textContent.match(/\n/g) || []).length; // 代码块高度估算
+        default:
+            return 10; // 其他元素默认高度
+    }
+}
+
+/**
+ * 判断是否应该开始新页面
+ * @param {string} tagName - 元素标签名
+ * @param {number} usedHeight - 当前页面已使用高度
+ * @param {number} elementHeight - 元素高度
+ * @param {number} maxPageHeight - 页面最大高度
+ * @returns {boolean} - 是否应该开始新页面
+ */
+function shouldStartNewPage(tagName, usedHeight, elementHeight, maxPageHeight) {
+    // 如果当前页面已经没有足够空间，创建新页面
+    if (usedHeight + elementHeight > maxPageHeight) {
+        return true;
+    }
+    
+    // 一级标题总是新页开始
+    if (tagName === 'H1' && usedHeight > 0) {
+        return true;
+    }
+    
+    // 二级标题，如果当前页已经使用了超过30%的空间，则新页开始
+    if (tagName === 'H2' && usedHeight > maxPageHeight * 0.3) {
+        return true;
+    }
+    
+    // 三级标题，如果当前页已经使用了超过60%的空间，则新页开始
+    if (tagName === 'H3' && usedHeight > maxPageHeight * 0.6) {
+        return true;
+    }
+    
+    // 图片和表格，如果当前页已经使用了超过40%的空间，则新页开始
+    if ((tagName === 'FIGURE' || tagName === 'TABLE') && usedHeight > maxPageHeight * 0.4) {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * 创建页面元素
+ * @param {number} pageNumber - 页码
+ * @returns {HTMLElement} - 页面元素
+ */
+function createPageElement(pageNumber) {
+    const page = document.createElement('div');
+    page.className = 'content-page';
+    page.dataset.pageNumber = pageNumber;
+    
+    return page;
+}
+
+/**
+ * 添加页码到每个页面
+ * @param {HTMLElement} container - 页面容器
+ */
+function addPageNumbers(container) {
+    const pages = container.querySelectorAll('.content-page');
+    
+    pages.forEach((page, index) => {
+        const pageNumber = index + 1;
+        const pageFooter = document.createElement('div');
+        pageFooter.className = 'page-footer';
+        pageFooter.innerHTML = `<span class="page-number">${pageNumber}</span>`;
+        page.appendChild(pageFooter);
+    });
 }
 
 /**
