@@ -22,7 +22,15 @@
     /* 字体变量 */
     --font-title: "SimHei", "黑体", "Times New Roman", serif;
     --font-body: "SimSun", "宋体", "Times New Roman", serif;
+    --font-kai: "KaiTi", "楷体", serif;
+    --font-times: "Times New Roman", serif;
     --font-code: "Consolas", "Monaco", monospace;
+    
+    /* 字号变量 */
+    --font-size-h1: 14pt; /* 四号字 */
+    --font-size-h2: 12pt; /* 小四号字 */
+    --font-size-h3: 16pt; /* 三号字 */
+    --font-size-body: 12pt; /* 小四号字 */
     
     /* 间距变量 */
     --section-spacing: 1.5em;
@@ -39,8 +47,8 @@ body {
     font-family: var(--font-body);
     color: var(--primary-color);
     background-color: var(--page-background);
-    line-height: 1.6;
-    font-size: 12pt;
+    line-height: 1.5; /* 1.5倍行距 */
+    font-size: var(--font-size-body);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -154,9 +162,134 @@ body {
     page-break-after: always; /* 打印时强制分页 */
 }
 
+/* 封面页样式 */
+.cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    height: 100%;
+}
+
+/* 校徽样式 */
+.university-logo {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    width: 500px;
+    height: auto;
+}
+
+/* 论文大标题样式 */
+.thesis-main-title {
+    font-size: 34pt;
+    font-weight: normal;
+    margin: 40px 0;
+    font-family: var(--font-kai);
+}
+
+/* 论文标题样式 */
+.thesis-title {
+    font-size: 26pt; /* 二号字约为26pt */
+    font-weight: normal;
+    margin: 60px 0 80px 0;
+    font-family: var(--font-kai);
+}
+
+/* 确保封面标题不显示标题号 */
+.cover-page h1::before,
+.cover-page h2::before,
+.cover-page h3::before {
+    content: none;
+}
+
+/* 学生信息样式 */
+.student-info {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 15px 10px;
+    margin: 40px 0;
+    font-size: 16pt; /* 三号字约为16pt */
+    width: 70%;
+    font-family: var(--font-times);
+}
+
+.student-info .label {
+    text-align: right;
+    font-weight: normal;
+}
+
+.student-info .value {
+    text-align: left;
+    font-weight: normal;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+}
+
+/* 日期样式 */
+.thesis-date {
+    margin-top: auto;
+    margin-bottom: 60px;
+    font-size: 16pt;
+}
+
 .content-page:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* 各级标题样式 */
+
+/* 一级标题：黑体四号字，居中对齐，样式是一、标题名 */
+.content-page h1 {
+    font-family: var(--font-title);
+    font-size: var(--font-size-h1);
+    font-weight: bold;
+    text-align: center;
+    margin: 1.5em 0 1em 0;
+    counter-reset: h2counter;
+}
+
+.content-page h1::before {
+    content: "\4e00\3001";
+    margin-right: 0.5em;
+}
+
+/* 二级标题：楷体小四字，靠左对齐，样式是 1.1 标题名 */
+.content-page h2 {
+    font-family: var(--font-kai);
+    font-size: var(--font-size-h2);
+    font-weight: bold;
+    text-align: left;
+    margin: 1.2em 0 0.8em 0;
+    counter-reset: h3counter;
+}
+
+.content-page h2::before {
+    content: attr(data-section) "." attr(data-subsection) " ";
+}
+
+/* 三级标题：宋体三号字，首行缩进1字符，样式是 1.1.1 标题名 */
+.content-page h3 {
+    font-family: var(--font-body);
+    font-size: var(--font-size-h3);
+    font-weight: bold;
+    text-align: left;
+    margin: 1em 0 0.6em 0;
+    text-indent: 1em;
+}
+
+.content-page h3::before {
+    content: attr(data-section) "." attr(data-subsection) "." attr(data-subsubsection) " ";
+}
+
+/* 正文：宋体小四号字，首行缩进两字符。1.5倍行距 */
+.content-page p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-indent: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
 }
 
 /* 页脚和页码样式 */

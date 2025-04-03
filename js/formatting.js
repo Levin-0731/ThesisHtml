@@ -51,22 +51,114 @@ export function initializeFormatting() {
  */
 function processHeadings() {
     // 查找所有标题元素
-    const headings = document.querySelectorAll('.paper-content h1, .paper-content h2, .paper-content h3, .paper-content h4');
+    const contentPages = document.querySelectorAll('.content-page');
     
-    headings.forEach(heading => {
-        const tagName = heading.tagName.toLowerCase();
-        
-        // 设置标题间距
-        if (FORMAT_CONFIG.headingSpacing[tagName]) {
-            heading.style.marginBottom = FORMAT_CONFIG.headingSpacing[tagName];
+    // 遍历每个内容页
+    contentPages.forEach(page => {
+        // 跳过封面页
+        if (page.querySelector('.cover-page')) {
+            return;
         }
         
-        // 为二级标题添加下划线效果
-        if (tagName === 'h2') {
-            heading.style.paddingBottom = '0.3em';
-            heading.style.borderBottom = '1px solid var(--border-color)';
-        }
+        // 处理每个页面中的标题
+        const h1Elements = page.querySelectorAll('h1');
+        const h2Elements = page.querySelectorAll('h2');
+        const h3Elements = page.querySelectorAll('h3');
+        
+        // 处理一级标题（黑体四号字，居中对齐，样式是-- 一、标题名）
+        h1Elements.forEach((h1, index) => {
+            // 不需要添加编号，CSS中已经处理了
+            h1.style.fontFamily = 'var(--font-title)';
+            h1.style.fontSize = 'var(--font-size-h1)';
+            h1.style.fontWeight = 'bold';
+            h1.style.textAlign = 'center';
+            h1.style.margin = '1.5em 0 1em 0';
+        });
+        
+        // 处理二级标题（楷体小四字，靠左对齐，样式是 --1.1 标题名）
+        h2Elements.forEach((h2, index) => {
+            const sectionNumber = index + 1;
+            h2.setAttribute('data-section', sectionNumber);
+            h2.setAttribute('data-subsection', '1');
+            
+            h2.style.fontFamily = 'var(--font-kai)';
+            h2.style.fontSize = 'var(--font-size-h2)';
+            h2.style.fontWeight = 'bold';
+            h2.style.textAlign = 'left';
+            h2.style.margin = '1.2em 0 0.8em 0';
+        });
+        
+        // 处理三级标题（宋体三号字，首行缩进1字符，样式是 -- 1.1.1 标题名）
+        let currentSection = 0;
+        let subsectionCounter = 0;
+        
+        h3Elements.forEach((h3, index) => {
+            // 找到该三级标题之前的最近的二级标题
+            const prevH2 = findPreviousHeading(h3, 'h2');
+            
+            if (prevH2) {
+                const section = prevH2.getAttribute('data-section');
+                const subsection = parseInt(prevH2.getAttribute('data-subsection')) || 1;
+                
+                if (currentSection !== section) {
+                    currentSection = section;
+                    subsectionCounter = 1;
+                } else {
+                    subsectionCounter++;
+                }
+                
+                // 更新二级标题的子节编号
+                prevH2.setAttribute('data-subsection', subsectionCounter);
+                
+                // 设置三级标题的属性
+                h3.setAttribute('data-section', section);
+                h3.setAttribute('data-subsection', subsectionCounter);
+                h3.setAttribute('data-subsubsection', '1');
+            }
+            
+            h3.style.fontFamily = 'var(--font-body)';
+            h3.style.fontSize = 'var(--font-size-h3)';
+            h3.style.fontWeight = 'bold';
+            h3.style.textAlign = 'left';
+            h3.style.margin = '1em 0 0.6em 0';
+            h3.style.textIndent = '1em';
+        });
+        
+        // 处理段落（宋体小四号字，首行缩进两字符）
+        const paragraphs = page.querySelectorAll('p');
+        paragraphs.forEach(p => {
+            p.style.fontFamily = 'var(--font-body)';
+            p.style.fontSize = 'var(--font-size-body)';
+            p.style.textIndent = '2em';
+            p.style.marginBottom = '0.8em';
+            p.style.lineHeight = '1.5';
+        });
     });
+}
+
+/**
+ * 查找元素之前的最近的指定标题
+ * @param {HTMLElement} element - 当前元素
+ * @param {string} headingTag - 要查找的标题标签（h1, h2, h3等）
+ * @returns {HTMLElement|null} - 找到的标题元素或null
+ */
+function findPreviousHeading(element, headingTag) {
+    let currentElement = element.previousElementSibling;
+    
+    while (currentElement) {
+        if (currentElement.tagName.toLowerCase() === headingTag.toLowerCase()) {
+            return currentElement;
+        }
+        currentElement = currentElement.previousElementSibling;
+    }
+    
+    // 如果在同级元素中没有找到，尝试在父元素中查找
+    const parent = element.parentElement;
+    if (parent && parent.tagName.toLowerCase() !== 'body') {
+        return findPreviousHeading(parent, headingTag);
+    }
+    
+    return null;
 }
 
 /**

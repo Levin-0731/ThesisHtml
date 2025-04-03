@@ -37,30 +37,62 @@ export function generatePages(contentNode, container) {
     scrollableContainer.className = 'scrollable-content';
     container.appendChild(scrollableContainer);
     
-    // 创建第一页
+    // 创建第一页（封面）
     let pageCount = 1;
     let currentPage = createPageElement(pageCount);
     scrollableContainer.appendChild(currentPage);
     
-    // 添加标题（第一页）
+    // 创建封面内容容器
+    const coverPage = document.createElement('div');
+    coverPage.className = 'cover-page';
+    currentPage.appendChild(coverPage);
+    
+    // 添加校徽
+    const logo = document.createElement('img');
+    logo.src = 'images/校徽.png';
+    logo.alt = '太原理工大学校徽';
+    logo.className = 'university-logo';
+    coverPage.appendChild(logo);
+    
+    // 添加论文大标题
+    const mainTitle = document.createElement('h1');
+    mainTitle.textContent = '2025届毕业论文-开题报告';
+    mainTitle.className = 'thesis-main-title';
+    coverPage.appendChild(mainTitle);
+    
+    // 添加论文标题
     const title = document.createElement('h1');
-    title.textContent = '基于改进遗传算法的土石方调运优化研究';
-    title.style.textAlign = 'center';
-    title.style.marginBottom = '25px';
+    title.textContent = '毕业实习报告';
+    title.className = 'thesis-title';
     title.id = 'main-title';
-    currentPage.appendChild(title);
+    coverPage.appendChild(title);
     
-    // 添加作者信息（第一页）
-    const authorInfo = document.createElement('div');
-    authorInfo.innerHTML = `
-        <div class="author" style="text-align: center; margin-bottom: 8px;">张三</div>
-        <div class="affiliation" style="text-align: center; margin-bottom: 8px;">某某大学水利与环境工程学院</div>
-        <div class="date" style="text-align: center; margin-bottom: 30px;">2025年4月</div>
+    // 添加学生信息
+    const studentInfo = document.createElement('div');
+    studentInfo.className = 'student-info';
+    studentInfo.innerHTML = `
+        <div class="label">姓　　名：</div>
+        <div class="value">梁海毅</div>
+        <div class="label">学　　号：</div>
+        <div class="value">2021002640</div>
+        <div class="label">专业班级：</div>
+        <div class="value">工程管理 2103 班</div>
+        <div class="label">指导教师：</div>
+        <div class="value">王天日</div>
     `;
-    currentPage.appendChild(authorInfo);
+    coverPage.appendChild(studentInfo);
     
-    // 估算已使用的高度
-    let usedHeight = estimateContentHeight(title) + estimateContentHeight(authorInfo);
+    // 添加日期
+    const dateInfo = document.createElement('div');
+    dateInfo.className = 'thesis-date';
+    dateInfo.textContent = '2025 年 3 月 9 日';
+    coverPage.appendChild(dateInfo);
+    
+    // 封面页不需要计算高度，直接创建第二页
+    pageCount++;
+    currentPage = createPageElement(pageCount);
+    scrollableContainer.appendChild(currentPage);
+    let usedHeight = 0;
     const maxPageHeight = PAGE_CONTENT_HEIGHT; // 页面最大高度（毫米）
     
     // 克隆内容
