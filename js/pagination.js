@@ -37,63 +37,16 @@ export function generatePages(contentNode, container) {
     scrollableContainer.className = 'scrollable-content';
     container.appendChild(scrollableContainer);
     
-    // 创建第一页（封面）
-    let pageCount = 1;
-    let currentPage = createPageElement(pageCount);
-    scrollableContainer.appendChild(currentPage);
+    // 初始化页面计数和容器
+    let pageCount = 0;
+    let currentPage;
+    let usedHeight = 0;
+    const maxPageHeight = PAGE_CONTENT_HEIGHT; // 页面最大高度（毫米）
     
-    // 创建封面内容容器
-    const coverPage = document.createElement('div');
-    coverPage.className = 'cover-page';
-    currentPage.appendChild(coverPage);
-    
-    // 添加校徽
-    const logo = document.createElement('img');
-    logo.src = 'images/校徽.png';
-    logo.alt = '太原理工大学校徽';
-    logo.className = 'university-logo';
-    coverPage.appendChild(logo);
-    
-    // 添加论文大标题
-    const mainTitle = document.createElement('h1');
-    mainTitle.textContent = '2025届毕业论文-开题报告';
-    mainTitle.className = 'thesis-main-title';
-    coverPage.appendChild(mainTitle);
-    
-    // 添加论文标题
-    const title = document.createElement('h1');
-    title.textContent = '毕业实习报告';
-    title.className = 'thesis-title';
-    title.id = 'main-title';
-    coverPage.appendChild(title);
-    
-    // 添加学生信息
-    const studentInfo = document.createElement('div');
-    studentInfo.className = 'student-info';
-    studentInfo.innerHTML = `
-        <div class="label">姓　　名：</div>
-        <div class="value">梁海毅</div>
-        <div class="label">学　　号：</div>
-        <div class="value">2021002640</div>
-        <div class="label">专业班级：</div>
-        <div class="value">工程管理 2103 班</div>
-        <div class="label">指导教师：</div>
-        <div class="value">王天日</div>
-    `;
-    coverPage.appendChild(studentInfo);
-    
-    // 添加日期
-    const dateInfo = document.createElement('div');
-    dateInfo.className = 'thesis-date';
-    dateInfo.textContent = '2025 年 3 月 9 日';
-    coverPage.appendChild(dateInfo);
-    
-    // 封面页不需要计算高度，直接创建第二页
+    // 创建第一页
     pageCount++;
     currentPage = createPageElement(pageCount);
     scrollableContainer.appendChild(currentPage);
-    let usedHeight = 0;
-    const maxPageHeight = PAGE_CONTENT_HEIGHT; // 页面最大高度（毫米）
     
     // 克隆内容
     const content = contentNode.cloneNode(true);

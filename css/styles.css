@@ -1,4 +1,6 @@
 :root {
+    /* 计数器初始化 */
+    counter-reset: h1counter;
     /* 颜色变量 */
     --primary-color: #333;
     --secondary-color: #555;
@@ -197,10 +199,24 @@ body {
 }
 
 /* 确保封面标题不显示标题号 */
+.cover-page h1,
+.cover-page h2,
+.cover-page h3 {
+    counter-increment: none !important;
+}
+
 .cover-page h1::before,
 .cover-page h2::before,
 .cover-page h3::before {
-    content: none;
+    content: none !important;
+    display: none !important;
+}
+
+/* 单独处理封面页标题，确保不显示编号 */
+.thesis-main-title::before,
+.thesis-title::before {
+    content: none !important;
+    display: none !important;
 }
 
 /* 学生信息样式 */
@@ -248,11 +264,13 @@ body {
     text-align: center;
     margin: 1.5em 0 1em 0;
     counter-reset: h2counter;
+    counter-increment: h1counter;
 }
 
 .content-page h1::before {
-    content: "\4e00\3001";
+    content: counter(h1counter, cjk-ideographic) "、";
     margin-right: 0.5em;
+    font-weight: bold;
 }
 
 /* 二级标题：楷体小四字，靠左对齐，样式是 1.1 标题名 */
@@ -285,6 +303,15 @@ body {
 
 /* 正文：宋体小四号字，首行缩进两字符。1.5倍行距 */
 .content-page p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-indent: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
+}
+
+/* 参考文献 */
+.content-page .references {
     font-family: var(--font-body);
     font-size: var(--font-size-body);
     text-indent: 2em;
