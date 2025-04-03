@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML论文展示系统</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/main.js" type="module" defer></script>
+    <!-- MathJax支持 -->
+    <script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            packages: ['base', 'ams', 'noerrors', 'noundefined']
+        },
+        loader: {
+            load: ['[tex]/noerrors', '[tex]/noundefined']
+        },
+        startup: {
+            ready: function() {
+                MathJax.startup.defaultReady();
+                // 在页面内容加载后重新渲染数学公式
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        MathJax.typeset();
+                    }, 1000);
+                });
+            }
+        }
+    };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="paper-container">
+        <aside class="toc-panel">
+            <h2>目录</h2>
+            <div id="toc-content"></div>
+        </aside>
+        
+        <main class="document-container">
+            <div id="pages-container">
+                <!-- 页面将通过JavaScript动态生成 -->
+            </div>
+        </main>
+        
+        <div class="controls">
+            <button id="print-btn" title="打印">打印</button>
+            <div class="page-navigation">
+                <button id="prev-page" title="上一页">上一页</button>
+                <span id="page-indicator">第 <span id="current-page">1</span> 页，共 <span id="total-pages">1</span> 页</span>
+                <button id="next-page" title="下一页">下一页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载外部章节内容，不再使用模板 -->
+</body>
+</html>
