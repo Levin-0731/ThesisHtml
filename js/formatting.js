@@ -53,6 +53,9 @@ function processHeadings() {
     // 查找所有标题元素
     const contentPages = document.querySelectorAll('.content-page');
     
+    // 初始化标题计数器
+    const counters = { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0 };
+    
     // 遍历每个内容页
     contentPages.forEach(page => {
         // 跳过封面页
@@ -61,67 +64,101 @@ function processHeadings() {
         }
         
         // 处理每个页面中的标题
-        const h1Elements = page.querySelectorAll('h1');
-        const h2Elements = page.querySelectorAll('h2');
-        const h3Elements = page.querySelectorAll('h3');
+        const headings = Array.from(page.querySelectorAll('h1, h2, h3, h4, h5'));
         
-        // 处理一级标题（黑体四号字，居中对齐，样式是-- 一、标题名）
-        h1Elements.forEach((h1, index) => {
-            // 不需要添加编号，CSS中已经处理了
-            h1.style.fontFamily = 'var(--font-title)';
-            h1.style.fontSize = 'var(--font-size-h1)';
-            h1.style.fontWeight = 'bold';
-            h1.style.textAlign = 'center';
-            h1.style.margin = '1.5em 0 1em 0';
-        });
-        
-        // 处理二级标题（楷体小四字，靠左对齐，样式是 --1.1 标题名）
-        h2Elements.forEach((h2, index) => {
-            const sectionNumber = index + 1;
-            h2.setAttribute('data-section', sectionNumber);
-            h2.setAttribute('data-subsection', '1');
+        // 按照DOM顺序处理标题
+        headings.forEach(heading => {
+            const tagName = heading.tagName.toLowerCase();
+            const level = parseInt(tagName.substring(1));
             
-            h2.style.fontFamily = 'var(--font-kai)';
-            h2.style.fontSize = 'var(--font-size-h2)';
-            h2.style.fontWeight = 'bold';
-            h2.style.textAlign = 'left';
-            h2.style.margin = '1.2em 0 0.8em 0';
-        });
-        
-        // 处理三级标题（宋体三号字，首行缩进1字符，样式是 -- 1.1.1 标题名）
-        let currentSection = 0;
-        let subsectionCounter = 0;
-        
-        h3Elements.forEach((h3, index) => {
-            // 找到该三级标题之前的最近的二级标题
-            const prevH2 = findPreviousHeading(h3, 'h2');
+            // 生成标题编号
+            let prefix = '';
             
-            if (prevH2) {
-                const section = prevH2.getAttribute('data-section');
-                const subsection = parseInt(prevH2.getAttribute('data-subsection')) || 1;
+            if (level === 1) {
+                // 一级标题特殊处理，可以使用中文数字
+                counters.h1++;
+                counters.h2 = 0;
+                counters.h3 = 0;
+                counters.h4 = 0;
+                counters.h5 = 0;
                 
-                if (currentSection !== section) {
-                    currentSection = section;
-                    subsectionCounter = 1;
+                heading.style.fontFamily = 'var(--font-title)';
+                heading.style.fontSize = 'var(--font-size-h1)';
+                heading.style.fontWeight = 'bold';
+                heading.style.textAlign = 'center';
+                heading.style.margin = '1.5em 0 1em 0';
+                
+                // 一级标题使用中文数字编号
+                const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+                if (counters.h1 <= 10) {
+                    prefix = chineseNumbers[counters.h1 - 1] + '、';
                 } else {
-                    subsectionCounter++;
+                    prefix = counters.h1 + '、';
                 }
+            } else if (level === 2) {
+                // 二级标题
+                counters.h2++;
+                counters.h3 = 0;
+                counters.h4 = 0;
+                counters.h5 = 0;
+                prefix = counters.h2 + '. ';
                 
-                // 更新二级标题的子节编号
-                prevH2.setAttribute('data-subsection', subsectionCounter);
+                heading.style.fontFamily = 'var(--font-kai)';
+                heading.style.fontSize = 'var(--font-size-h2)';
+                heading.style.fontWeight = 'bold';
+                heading.style.textAlign = 'left';
+                heading.style.margin = '1.2em 0 0.8em 0';
+            } else if (level === 3) {
+                // 三级标题
+                counters.h3++;
+                counters.h4 = 0;
+                counters.h5 = 0;
+                prefix = counters.h2 + '.' + counters.h3 + ' ';
                 
-                // 设置三级标题的属性
-                h3.setAttribute('data-section', section);
-                h3.setAttribute('data-subsection', subsectionCounter);
-                h3.setAttribute('data-subsubsection', '1');
+                heading.style.fontFamily = 'var(--font-body)';
+                heading.style.fontSize = 'var(--font-size-h3)';
+                heading.style.fontWeight = 'bold';
+                heading.style.textAlign = 'left';
+                heading.style.margin = '1em 0 0.6em 0';
+                heading.style.textIndent = '1em';
+            } else if (level === 4) {
+                // 四级标题
+                counters.h4++;
+                counters.h5 = 0;
+                prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + ' ';
+                
+                heading.style.fontFamily = 'var(--font-body)';
+                heading.style.fontSize = 'var(--font-size-h4)';
+                heading.style.fontWeight = 'bold';
+                heading.style.textAlign = 'left';
+                heading.style.margin = '0.8em 0 0.5em 0';
+                heading.style.textIndent = '1.5em';
+            } else if (level === 5) {
+                // 五级标题
+                counters.h5++;
+                prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + '.' + counters.h5 + ' ';
+                
+                heading.style.fontFamily = 'var(--font-body)';
+                heading.style.fontSize = 'var(--font-size-h5)';
+                heading.style.fontWeight = 'bold';
+                heading.style.textAlign = 'left';
+                heading.style.margin = '0.7em 0 0.4em 0';
+                heading.style.textIndent = '2em';
             }
             
-            h3.style.fontFamily = 'var(--font-body)';
-            h3.style.fontSize = 'var(--font-size-h3)';
-            h3.style.fontWeight = 'bold';
-            h3.style.textAlign = 'left';
-            h3.style.margin = '1em 0 0.6em 0';
-            h3.style.textIndent = '1em';
+            // 存储原始文本，不包含编号
+            if (!heading.hasAttribute('data-original-text')) {
+                heading.setAttribute('data-original-text', heading.textContent);
+            }
+            
+            // 添加编号（除了一级标题）
+            if (level > 1) {
+                heading.textContent = prefix + heading.getAttribute('data-original-text');
+            }
+            
+            // 设置数据属性以便于引用
+            heading.setAttribute('data-level', level);
+            heading.setAttribute('data-number', prefix.trim());
         });
         
         // 处理段落（宋体小四号字，首行缩进两字符）

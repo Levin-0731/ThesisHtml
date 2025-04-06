@@ -7,7 +7,7 @@
  */
 export function generateTOC() {
     const tocContent = document.getElementById('toc-content');
-    const contentPage = document.querySelector('.content-page');
+    const contentPages = document.querySelectorAll('.content-page');
     
     // 清空目录内容
     tocContent.innerHTML = '';
@@ -19,24 +19,38 @@ export function generateTOC() {
     // 用于存储目录项的数组
     const tocItems = [];
     
-    // 查找内容页中的所有标题元素
-    if (contentPage) {
-        const headings = contentPage.querySelectorAll('h2, h3, h4');
-        
-        headings.forEach(heading => {
-            // 获取标题ID，如果没有则创建一个
-            if (!heading.id) {
-                heading.id = 'heading-' + Math.random().toString(36).substr(2, 9);
+    // 查找所有内容页中的标题元素
+    if (contentPages && contentPages.length > 0) {
+        // 遍历所有页面
+        contentPages.forEach(contentPage => {
+            // 跳过封面页
+            if (contentPage.querySelector('.cover-page')) {
+                return;
             }
             
-            // 创建目录项
-            const tocItem = {
-                id: heading.id,
-                text: heading.textContent,
-                level: parseInt(heading.tagName.substring(1))
-            };
+            const headings = contentPage.querySelectorAll('h1, h2, h3, h4, h5');
             
-            tocItems.push(tocItem);
+            headings.forEach(heading => {
+                // 跳过封面页的标题
+                if (heading.classList.contains('thesis-main-title') || 
+                    heading.classList.contains('thesis-title') || 
+                    heading.id === 'main-title') {
+                    return;
+                }
+                // 获取标题ID，如果没有则创建一个
+                if (!heading.id) {
+                    heading.id = 'heading-' + Math.random().toString(36).substr(2, 9);
+                }
+                
+                // 创建目录项
+                const tocItem = {
+                    id: heading.id,
+                    text: heading.textContent,
+                    level: parseInt(heading.tagName.substring(1))
+                };
+                
+                tocItems.push(tocItem);
+            });
         });
     }
     
@@ -53,13 +67,60 @@ export function generateTOC() {
  * @param {HTMLElement} container - 目录容器
  */
 function buildTOCHTML(items, container) {
+    // 为标题添加编号
+    const counters = { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0 };
+    
     items.forEach(item => {
         const li = document.createElement('li');
         li.className = `toc-h${item.level}`;
         li.dataset.target = item.id;
         
-        // 创建目录文本
-        const text = document.createTextNode(item.text);
+        // 根据标题级别生成编号
+        let prefix = '';
+        if (item.level === 1) {
+            // 一级标题特殊处理
+            counters.h1++;
+            counters.h2 = 0;
+            counters.h3 = 0;
+            counters.h4 = 0;
+            counters.h5 = 0;
+            
+            // 一级标题使用特殊样式
+            li.style.fontWeight = 'bold';
+            li.style.fontSize = '1.1em';
+            li.style.marginTop = '0.8em';
+            li.style.marginBottom = '0.4em';
+            li.style.color = '#333';
+            
+            // 一级标题使用中文数字编号
+            const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+            if (counters.h1 <= 10) {
+                prefix = chineseNumbers[counters.h1 - 1] + '、';
+            } else {
+                prefix = counters.h1 + '、';
+            }
+        } else if (item.level === 2) {
+            counters.h2++;
+            counters.h3 = 0; // 重置下级计数器
+            counters.h4 = 0;
+            counters.h5 = 0;
+            prefix = counters.h2 + '. ';
+        } else if (item.level === 3) {
+            counters.h3++;
+            counters.h4 = 0; // 重置下级计数器
+            counters.h5 = 0;
+            prefix = counters.h2 + '.' + counters.h3 + ' ';
+        } else if (item.level === 4) {
+            counters.h4++;
+            counters.h5 = 0; // 重置下级计数器
+            prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + ' ';
+        } else if (item.level === 5) {
+            counters.h5++;
+            prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + '.' + counters.h5 + ' ';
+        }
+        
+        // 创建目录文本（带编号）
+        const text = document.createTextNode(prefix + item.text);
         li.appendChild(text);
         
         container.appendChild(li);
