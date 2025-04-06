@@ -445,6 +445,17 @@ body {
     line-height: 1.5;
 }
 
+/* 页眉样式 */
+.page-header {
+    position: absolute;
+    top: 10mm;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
 /* 页脚和页码样式 */
 .page-footer {
     position: absolute;

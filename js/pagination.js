@@ -93,6 +93,9 @@ export function generatePages(contentNode, container) {
     // 添加页码到每个页面
     addPageNumbers(scrollableContainer);
     
+    // 添加页眉（封面页除外）
+    addHeaders(scrollableContainer);
+    
     console.log(`内容生成完成，共 ${pageCount} 页`);
     
     // 更新总页数显示
@@ -413,13 +416,36 @@ function createPageElement(pageNumber) {
  */
 function addPageNumbers(container) {
     const pages = container.querySelectorAll('.content-page');
-    
     pages.forEach((page, index) => {
         const pageNumber = index + 1;
-        const pageFooter = document.createElement('div');
-        pageFooter.className = 'page-footer';
-        pageFooter.innerHTML = `<span class="page-number">${pageNumber}</span>`;
-        page.appendChild(pageFooter);
+        const footer = document.createElement('div');
+        footer.className = 'page-footer';
+        footer.innerHTML = `<span class="page-number">${pageNumber}</span>`;
+        page.appendChild(footer);
+    });
+}
+
+/**
+ * 添加页眉到非封面页
+ * @param {HTMLElement} container - 页面容器
+ */
+function addHeaders(container) {
+    const pages = container.querySelectorAll('.content-page');
+    pages.forEach(page => {
+        // 检查页面是否包含封面页元素
+        const hasCoverPageElement = page.querySelector('.cover-page, .thesis-main-title, .thesis-title, .university-logo, .student-info, .thesis-date');
+        
+        // 如果不是封面页，添加页眉
+        if (!hasCoverPageElement) {
+            const header = document.createElement('div');
+            header.className = 'page-header';
+            // 将页眉插入到页面的最前面
+            if (page.firstChild) {
+                page.insertBefore(header, page.firstChild);
+            } else {
+                page.appendChild(header);
+            }
+        }
     });
 }
 
