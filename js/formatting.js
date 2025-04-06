@@ -92,6 +92,8 @@ function processHeadings() {
                 const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
                 if (counters.h1 <= 10) {
                     prefix = chineseNumbers[counters.h1 - 1] + '、';
+                } else if (counters.h1 <= 19) {
+                    prefix = '十' + (counters.h1 > 10 ? chineseNumbers[counters.h1 - 11] : '') + '、';
                 } else {
                     prefix = counters.h1 + '、';
                 }
@@ -101,7 +103,8 @@ function processHeadings() {
                 counters.h3 = 0;
                 counters.h4 = 0;
                 counters.h5 = 0;
-                prefix = counters.h2 + '. ';
+                // 移除JavaScript编号，使用CSS编号
+                prefix = '';
                 
                 heading.style.fontFamily = 'var(--font-kai)';
                 heading.style.fontSize = 'var(--font-size-h2)';
@@ -113,7 +116,8 @@ function processHeadings() {
                 counters.h3++;
                 counters.h4 = 0;
                 counters.h5 = 0;
-                prefix = counters.h2 + '.' + counters.h3 + ' ';
+                // 修改为与CSS一致的简单阿拉伯数字编号
+                prefix = counters.h3 + '. ';
                 
                 heading.style.fontFamily = 'var(--font-body)';
                 heading.style.fontSize = 'var(--font-size-h3)';

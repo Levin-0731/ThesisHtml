@@ -92,10 +92,12 @@ function buildTOCHTML(items, container) {
             li.style.marginBottom = '0.4em';
             li.style.color = '#333';
             
-            // 一级标题使用中文数字编号
+            // 一级标题使用中文数字编号 - 与CSS保持一致
             const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
             if (counters.h1 <= 10) {
                 prefix = chineseNumbers[counters.h1 - 1] + '、';
+            } else if (counters.h1 <= 19) {
+                prefix = '十' + (counters.h1 > 10 ? chineseNumbers[counters.h1 - 11] : '') + '、';
             } else {
                 prefix = counters.h1 + '、';
             }
@@ -104,18 +106,28 @@ function buildTOCHTML(items, container) {
             counters.h3 = 0; // 重置下级计数器
             counters.h4 = 0;
             counters.h5 = 0;
-            prefix = counters.h2 + '. ';
+            // 二级标题使用中文数字编号 - 与CSS保持一致
+            const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+                '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十'];
+            if (counters.h2 <= 20) {
+                prefix = '（' + chineseNumbers[counters.h2 - 1] + '）';
+            } else {
+                prefix = '（' + counters.h2 + '）';
+            }
         } else if (item.level === 3) {
             counters.h3++;
             counters.h4 = 0; // 重置下级计数器
             counters.h5 = 0;
-            prefix = counters.h2 + '.' + counters.h3 + ' ';
+            // 三级标题使用阿拉伯数字 - 与CSS保持一致
+            prefix = counters.h3 + '. ';
         } else if (item.level === 4) {
             counters.h4++;
             counters.h5 = 0; // 重置下级计数器
+            // 四级标题使用层级编号 - 与JavaScript中保持一致
             prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + ' ';
         } else if (item.level === 5) {
             counters.h5++;
+            // 五级标题使用层级编号 - 与JavaScript中保持一致
             prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + '.' + counters.h5 + ' ';
         }
         
