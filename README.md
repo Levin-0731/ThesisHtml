@@ -98,7 +98,7 @@ const CHAPTER_FILES = [
     /* 尺寸变量 */
     --page-width: 210mm;
     --page-height: 297mm;
-    --margin-top: 25mm;
+    --margin-top: 15mm;  /* 页面上边距，已从默认的25mm调整为15mm */
     --margin-right: 20mm;
     --margin-bottom: 25mm;
     --margin-left: 20mm;
@@ -109,6 +109,25 @@ const CHAPTER_FILES = [
     --font-code: "Consolas", "Monaco", monospace;
 }
 ```
+
+### 页面边距与标题位置调整
+
+系统支持通过以下方式调整页面边距和标题位置：
+
+1. **调整整体页面边距**：通过修改CSS变量实现
+   - `--margin-top`: 控制页面上边距（默认为25mm，当前已调整为15mm）
+   - `--margin-right`: 控制页面右边距
+   - `--margin-bottom`: 控制页面下边距
+   - `--margin-left`: 控制页面左边距
+
+2. **调整标题与页面顶部的距离**：通过修改标题元素的margin-top属性实现
+   ```css
+   h1 {
+       margin-top: 10mm; /* 控制h1标题与页面上边距的距离 */
+   }
+   ```
+
+调整这些值可以精确控制文档的排版效果，使其符合特定的论文格式要求。
 
 ## 注意事项
 
@@ -179,6 +198,113 @@ const CHAPTER_FILES = [
 - 增强引用和参考文献管理
 - 添加多主题支持
 - 提供更多格式导出选项（如Word、Markdown）
+
+## 标签编号规范
+
+### 标题编号规范
+
+- **一级标题**：使用中文数字加顶格，如 `一、引言`、`二、相关工作`
+- **二级标题**：使用中文数字加括号，如 `（一）研究背景`、`（二）研究现状`
+- **三级标题**：使用阿拉伯数字加半角右括号，如 `1) 国内研究现状`、`2) 国外研究现状`
+
+### 正文有序列表编号规范
+
+- **第一级有序列表**：使用阿拉伯数字加点，如 `1. 第一项`、`2. 第二项`
+- **第二级有序列表**：使用小写英文字母加点，如 `a. 子项一`、`b. 子项二`
+- **第三级有序列表**：使用小写罗马数字加点，如 `i. 小项一`、`ii. 小项二`
+
+### 特殊元素编号规范
+
+- **图表编号**：使用「图/表+章节号+序号」格式，如 `图2-1`、`表3-2`
+- **公式编号**：使用章节号-序号格式，放在右侧括号内，如 `(2-1)`
+- **参考文献编号**：使用方括号包裹的阿拉伯数字，如 `[1]`、`[2]`
+
+### HTML实现方式
+
+在HTML中，可以使用以下方式实现上述编号规范：
+
+```html
+<!-- 标题编号 -->
+<h1>一、引言</h1>
+<h2>（一）研究背景</h2>
+<h3>1. 国内研究现状</h3>
+
+<!-- 有序列表编号 -->
+<ol>
+  <li>1. 第一项</li>
+  <li>2. 第二项
+    <ol style="list-style-type: lower-alpha;">
+      <li>a. 子项一</li>
+      <li>b. 子项二
+        <ol style="list-style-type: lower-roman;">
+          <li>i. 小项一</li>
+          <li>ii. 小项二</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+```
+
+对应的CSS样式：
+
+```css
+/* 标题样式 */
+.content-page h1 {
+  font-family: var(--font-title);
+  font-size: 30pt;
+  font-weight: bold;
+  text-align: center;
+  counter-reset: h2counter;
+  counter-increment: h1counter;
+}
+
+.content-page h1::before {
+  content: counter(h1counter, cjk-ideographic) "、";
+  font-weight: bold;
+}
+
+.content-page h2 {
+  font-family: var(--font-title);
+  font-size: var(--font-size-h1);
+  font-weight: bold;
+  counter-reset: h3counter;
+  counter-increment: h2counter;
+}
+
+.content-page h2::before {
+  content: "（" counter(h2counter, cjk-ideographic) "）";
+  margin-right: 0.5em;
+  font-weight: bold;
+}
+
+.content-page h3 {
+  font-family: var(--font-title);
+  font-size: var(--font-size-h2);
+  font-weight: bold;
+  counter-increment: h3counter;
+}
+
+.content-page h3::before {
+  content: counter(h3counter) ". ";
+  margin-right: 0.5em;
+  font-weight: bold;
+}
+
+/* 有序列表样式 */
+.content-page ol {
+  padding-left: 2em;
+  list-style-type: decimal;
+}
+
+.content-page ol ol {
+  list-style-type: lower-alpha;
+}
+
+.content-page ol ol ol {
+  list-style-type: lower-roman;
+}
+```
 
 ## 许可证
 
