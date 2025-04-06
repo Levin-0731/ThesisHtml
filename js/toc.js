@@ -118,8 +118,8 @@ function buildTOCHTML(items, container) {
             counters.h3++;
             counters.h4 = 0; // 重置下级计数器
             counters.h5 = 0;
-            // 三级标题使用阿拉伯数字 - 与CSS保持一致
-            prefix = counters.h3 + '. ';
+            // 三级标题使用阿拉伯数字加半角右括号 - 与CSS保持一致
+            prefix = counters.h3 + ')';
         } else if (item.level === 4) {
             counters.h4++;
             counters.h5 = 0; // 重置下级计数器

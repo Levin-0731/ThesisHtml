@@ -11,7 +11,7 @@
     --page-background: #f0f0f0;
     --heading-color: #222;
     --caption-color: #444;
-    --code-background: #f8f8f8;
+    --code-background: #f5f2f0; /* 与Prism默认主题匹配 */
     
     /* 尺寸变量 */
     --page-width: 210mm;
@@ -277,7 +277,7 @@ body {
 /* 一级标题：黑体小三号字，居中对齐，样式是一、标题名 */
 .content-page h1 {
     font-family: var(--font-title);
-    font-size: 15pt; /* 小三号字 */
+    font-size: 30pt; /* 一号字 */
     font-weight: bold;
     text-align: center;
     margin: 1.5em 0 1em 0;
@@ -300,7 +300,7 @@ body {
     font-size: var(--font-size-h1); /* 四号字 */
     font-weight: bold;
     text-align: left;
-    margin: 1.2em 0 0.8em 0;
+    margin: 1.5em 0 0.5em 0;
     counter-reset: h3counter;
     counter-increment: h2counter;
     position: relative;
@@ -312,6 +312,11 @@ body {
     content: "（" counter(h2counter, cjk-ideographic) "）";
     margin-right: 0.5em;
     font-weight: bold;
+}
+
+/* 为每个章节的h1后面的所有h2标签重置计数器 */
+.content-page h1 {
+    counter-reset: h2counter 0;
 }
 
 /* 三级标题：黑体小四号字，左对齐，样式是 1. 标题名 */
@@ -329,7 +334,7 @@ body {
 }
 
 .content-page h3::before {
-    content: counter(h3counter) ". ";
+    content: counter(h3counter) ")";
     margin-right: 0.5em;
     font-weight: bold;
 }
@@ -382,10 +387,13 @@ body {
     margin-bottom: 0 !important;
 }
 
-/* 强制标题后的段落没有额外的间距 */
+/* 强制标题后的段落和列表没有额外的间距 */
 .content-page h1 + p,
 .content-page h2 + p,
-.content-page h3 + p {
+.content-page h3 + p,
+.content-page h1 + ul,
+.content-page h2 + ul,
+.content-page h3 + ul {
     margin-top: 0 !important;
 }
 
@@ -530,23 +538,30 @@ button:active {
 
 /* 数学公式样式 */
 .math-formula {
-    margin: 0.6em 0; /* 减小上下边距 */
+    margin: 0.3em 0; /* 进一步减小上下边距 */
     text-align: center;
-    padding: 0.3em 0; /* 减小内边距 */
+    padding: 0.2em 0; /* 减小内边距 */
     position: relative;
 }
 
 /* MathJax相关样式 */
 .mjx-chtml {
-    margin: 0.4em 0 !important; /* 减小MathJax公式的上下边距 */
+    margin: 0.2em 0 !important; /* 进一步减小MathJax公式的上下边距 */
 }
 
 .MathJax_Display {
-    margin: 0.4em 0 !important; /* 减小显示公式的边距 */
+    margin: 0.2em 0 !important; /* 进一步减小显示公式的边距 */
 }
 
 .MathJax {
-    line-height: 1.2 !important; /* 减小行高 */
+    line-height: 1.1 !important; /* 进一步减小行高 */
+}
+
+/* 确保公式与正文之间的间距更小 */
+p + .math-formula,
+.math-formula + p {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
 }
 
 .math-formula-number {
@@ -576,14 +591,9 @@ button:active {
     content: counter(section) ". ";
 }
 
+/* 禁用自动编号类中的三级标题编号，使用content-page中的编号样式 */
 .auto-number h3:before {
-    counter-increment: subsection;
-    content: counter(section) "." counter(subsection) " ";
-}
-
-.auto-number h4:before {
-    counter-increment: subsubsection;
-    content: counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+    content: none;
 }
 
 /* 自动编号列表 */
@@ -663,44 +673,58 @@ ol.auto-number-list li:before {
     margin-bottom: 5px;
 }
 
-.paper-content figure {
-    margin: 25px 0;
+.paper-content figure,
+.figure {
+    margin: 15px 0; /* 减小上下边距 */
     text-align: center;
-    padding: 10px;
+    padding: 8px; /* 减小内边距 */
     background-color: #fafafa;
     border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* 添加轻微阴影 */
 }
 
-.paper-content img {
+.paper-content img,
+.figure img {
     max-width: 100%;
     max-height: 150mm;
     object-fit: contain;
+    border: 1px solid #eee; /* 添加轻微边框 */
 }
 
-.paper-content figcaption {
-    margin-top: 10px;
+.paper-content figcaption,
+.figure .caption {
+    margin-top: 8px;
     font-size: 10pt;
     color: var(--caption-color);
     font-style: italic;
+    text-align: center;
 }
 
-.paper-content table {
+.paper-content table,
+.table-container table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
+    margin: 15px 0; /* 减小上下边距 */
+    border: 1px solid var(--border-color);
 }
 
-.paper-content caption {
-    margin-bottom: 10px;
+.paper-content caption,
+.table-container caption {
+    margin-bottom: 8px;
     font-size: 10pt;
     color: var(--secondary-color);
+    text-align: center;
+    caption-side: top;
 }
 
 .paper-content th,
-.paper-content td {
+.paper-content td,
+.table-container th,
+.table-container td {
     border: 1px solid var(--border-color);
-    padding: 8px;
-    text-align: left;
+    padding: 6px 8px; /* 减小内边距 */
+    text-align: center; /* 居中对齐 */
+    vertical-align: middle;
 }
 
 .paper-content th {
@@ -708,18 +732,62 @@ ol.auto-number-list li:before {
     font-weight: bold;
 }
 
-.paper-content pre {
+.paper-content pre,
+.code-block pre {
     background-color: var(--code-background);
-    padding: 12px 15px;
+    padding: 10px 12px; /* 减小内边距 */
     border-radius: 5px;
     overflow-x: auto;
-    margin: 18px 0;
+    margin: 12px 0; /* 减小上下边距 */
     border: 1px solid #e8e8e8;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* 添加轻微阴影 */
+    position: relative;
 }
 
-.paper-content code {
+.paper-content code,
+.code-block code {
     font-family: var(--font-code);
     font-size: 10pt;
+    line-height: 1.3; /* 减小代码行高 */
+    white-space: pre-wrap; /* 确保长行可以换行 */
+}
+
+/* Prism.js代码高亮相关样式 */
+.code-block pre[class*="language-"] {
+    margin: 12px 0;
+    padding: 10px 12px;
+}
+
+/* 添加语言标识 */
+.code-block pre[class*="language-"]::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 0.8em;
+    color: #999;
+    background-color: rgba(245, 242, 240, 0.7);
+    padding: 0 0.5em;
+    border-radius: 0 0 4px 4px;
+    text-transform: uppercase;
+}
+
+/* 行号样式 */
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid #ddd;
+}
+
+/* 打印时保持代码高亮 */
+@media print {
+    .code-block pre[class*="language-"] {
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+    
+    code[class*="language-"], 
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
 }
 
 .paper-content .references-list {

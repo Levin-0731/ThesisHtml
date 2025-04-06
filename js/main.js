@@ -15,7 +15,7 @@ const CHAPTER_FILES = [
     'sections/chapter4_实施计划.html',
     'sections/chapter5_预期成果.html',
     'sections/chapter6_参考文献.html',
-    // 'sections/chapter1绪论.html', // 原始文件，已拆分为上述六个章节
+    'sections/chapter7_示例章节.html',
 ];
 
 // 页面加载完成后初始化
@@ -58,6 +58,10 @@ async function initializeSystem() {
         // 初始化格式化功能（缩进、自动编号和数学公式）
         console.log('初始化格式化功能...');
         initializeFormatting();
+        
+        // 触发内容加载完成事件，用于代码高亮等功能
+        console.log('触发内容加载完成事件...');
+        document.dispatchEvent(new CustomEvent('contentLoaded'));
     } catch (error) {
         console.error('初始化系统失败:', error);
         showError('加载论文内容失败，请刷新页面重试。');
