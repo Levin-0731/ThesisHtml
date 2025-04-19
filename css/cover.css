@@ -1,0 +1,86 @@
+/* cover.css - 封面页样式 */
+
+/* 封面页样式 */
+.cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    height: 100%;
+}
+
+/* 校徽样式 */
+.university-logo {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    width: 500px;
+    height: auto;
+}
+
+/* 论文大标题样式 */
+.thesis-main-title {
+    font-size: 34pt;
+    font-weight: normal;
+    margin: 40px 0;
+    font-family: var(--font-kai);
+}
+
+/* 论文标题样式 */
+.thesis-title {
+    font-size: 26pt; /* 二号字约为26pt */
+    font-weight: normal;
+    margin: 60px 0 80px 0;
+    font-family: var(--font-kai);
+}
+
+/* 确保封面标题不显示标题号 */
+.cover-page h1,
+.cover-page h2,
+.cover-page h3 {
+    counter-increment: none !important;
+}
+
+.cover-page h1::before,
+.cover-page h2::before,
+.cover-page h3::before {
+    content: none !important;
+    display: none !important;
+}
+
+/* 单独处理封面页标题，确保不显示编号 */
+.thesis-main-title::before,
+.thesis-title::before {
+    content: none !important;
+    display: none !important;
+}
+
+/* 学生信息样式 */
+.student-info {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 15px 10px;
+    margin: 40px 0;
+    font-size: 16pt; /* 三号字约为16pt */
+    width: 70%;
+    font-family: var(--font-times);
+}
+
+.student-info .label {
+    text-align: right;
+    font-weight: normal;
+}
+
+.student-info .value {
+    text-align: left;
+    font-weight: normal;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+}
+
+/* 日期样式 */
+.thesis-date {
+    margin-top: auto;
+    margin-bottom: 60px;
+    font-size: 16pt;
+}

@@ -1,0 +1,70 @@
+/* base.css - 基础变量与重置样式 */
+
+:root {
+    /* 计数器初始化 - 添加h4和h5计数器 */
+    counter-reset: h1counter h2counter h3counter h4counter h5counter;
+    /* 颜色变量 */
+    --primary-color: #333;
+    --secondary-color: #555;
+    --accent-color: #0055aa;
+    --light-accent-color: #e6f0fa;
+    --background-color: #fff;
+    --border-color: #ddd;
+    --page-background: #f0f0f0;
+    --heading-color: #222;
+    --caption-color: #444;
+    --code-background: #f5f2f0; /* 与Prism默认主题匹配 */
+    
+    /* 尺寸变量 */
+    --page-width: 210mm;
+    --page-height: 297mm;
+    --margin-top: 12mm; /* 页面上边距 */
+    --margin-right: 20mm;
+    --margin-bottom: 25mm;
+    --margin-left: 20mm;
+    
+    /* 字体变量 */
+    --font-title: "SimHei", "黑体", "Times New Roman", serif;
+    --font-body: "SimSun", "宋体", "Times New Roman", serif;
+    --font-kai: "KaiTi", "楷体", serif;
+    --font-times: "Times New Roman", serif;
+    --font-code: "Consolas", "Monaco", monospace;
+    
+    /* 字号变量 */
+    --font-size-h1: 18pt; /* 四号字 */
+    --font-size-h2: 12pt; /* 小四号字 */
+    --font-size-h3: 10.5pt; /* 五号字 */
+    --font-size-body: 12pt; /* 小四号字 */
+    
+    /* 间距变量 */
+    --section-spacing: 1.5em;
+    --paragraph-spacing: 0.8em;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--primary-color);
+    background-color: var(--page-background);
+    line-height: 1.5; /* 1.5倍行距 */
+    font-size: var(--font-size-body);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    color: var(--heading-color);
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+}
+
+h1 {
+    margin-top: 10mm; /* 调整h1标题与页面上边距的距离 */
+}

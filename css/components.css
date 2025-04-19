@@ -1,0 +1,105 @@
+/* components.css - 特殊元素样式 */
+
+/* 数学公式样式 */
+.math-formula {
+    margin: 0.3em 0; /* 进一步减小上下边距 */
+    text-align: center;
+    padding: 0.2em 0; /* 减小内边距 */
+    position: relative;
+}
+
+/* MathJax相关样式 */
+.mjx-chtml {
+    margin: 0.2em 0 !important; /* 进一步减小MathJax公式的上下边距 */
+}
+
+.MathJax_Display {
+    margin: 0.2em 0 !important; /* 进一步减小显示公式的边距 */
+}
+
+.MathJax {
+    line-height: 1.1 !important; /* 进一步减小行高 */
+}
+
+/* 确保公式与正文之间的间距更小 */
+p + .math-formula,
+.math-formula + p {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
+}
+
+.math-formula-number {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 0.5em;
+    color: var(--secondary-color);
+}
+
+/* 图表样式 */
+.paper-content figure,
+.figure {
+    margin: 15px 0; /* 减小上下边距 */
+    text-align: center;
+    padding: 8px; /* 减小内边距 */
+    background-color: #fafafa;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* 添加轻微阴影 */
+}
+
+.paper-content img,
+.figure img {
+    max-width: 100%;
+    max-height: 150mm;
+    object-fit: contain;
+    border: 1px solid #eee; /* 添加轻微边框 */
+}
+
+.paper-content figcaption,
+.figure .caption {
+    margin-top: 8px;
+    font-size: 10pt;
+    color: var(--caption-color);
+    font-style: italic;
+    text-align: center;
+}
+
+/* 表格样式 */
+.paper-content table,
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0; /* 减小上下边距 */
+    border: 1px solid var(--border-color);
+}
+
+.paper-content caption,
+.table-container caption {
+    margin-bottom: 8px;
+    font-size: 10pt;
+    color: var(--secondary-color);
+    text-align: center;
+    caption-side: top;
+}
+
+.paper-content th,
+.paper-content td,
+.table-container th,
+.table-container td {
+    border: 1px solid var(--border-color);
+    padding: 6px 8px; /* 减小内边距 */
+    text-align: center; /* 居中对齐 */
+    vertical-align: middle;
+}
+
+.paper-content th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* 高亮元素 */
+.highlight-element {
+    background-color: rgba(255, 235, 59, 0.3);
+    transition: background-color 0.3s ease;
+}

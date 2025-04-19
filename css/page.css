@@ -1,0 +1,51 @@
+/* page.css - 页面样式 */
+
+/* 内容页样式 */
+.content-page {
+    width: var(--page-width);
+    min-height: var(--page-height);
+    padding: var(--margin-top) var(--margin-right) var(--margin-bottom) var(--margin-left);
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: visible;
+    page-break-after: always; /* 打印时强制分页 */
+}
+
+.content-page:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* 页眉样式 */
+.page-header {
+    position: absolute;
+    top: 10mm;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+/* 页脚和页码样式 */
+.page-footer {
+    position: absolute;
+    bottom: 10mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10pt;
+    color: var(--secondary-color);
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.page-number {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: var(--light-accent-color);
+}

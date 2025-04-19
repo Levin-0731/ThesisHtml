@@ -1,0 +1,133 @@
+/* headings.css - 标题样式 */
+
+/* 各级标题样式 */
+
+/* 一级标题：黑体小三号字，居中对齐，样式是一、标题名 */
+.content-page h1 {
+    font-family: var(--font-title);
+    font-size: 30pt; /* 一号字 */
+    font-weight: bold;
+    text-align: center;
+    margin: 1.5em 0 1em 0;
+    counter-reset: h2counter;
+    counter-increment: h1counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-page h1::before {
+    content: counter(h1counter, cjk-ideographic) "、";
+    font-weight: bold;
+}
+
+/* 二级标题：黑体四号字，左对齐，样式是（一）标题名 */
+.content-page h2 {
+    font-family: var(--font-title);
+    font-size: var(--font-size-h1); /* 四号字 */
+    font-weight: bold;
+    text-align: left;
+    margin: 1.5em 0 0.5em 0;
+    counter-reset: h3counter;
+    counter-increment: h2counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.content-page h2::before {
+    content: "（" counter(h2counter, cjk-ideographic) "）";
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+/* 为每个章节的h1后面的所有h2标签重置计数器 */
+.content-page h1 {
+    counter-reset: h2counter 0;
+}
+
+/* 三级标题：黑体小四号字，左对齐，样式是 1) 标题名 */
+.content-page h3 {
+    font-family: var(--font-title);
+    font-size: var(--font-size-h2); /* 小四号字 */
+    font-weight: bold;
+    text-align: left;
+    margin: 1em 0 0.6em 0;
+    text-indent: 1em;
+    counter-increment: h3counter;
+    counter-reset: h4counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.content-page h3::before {
+    content: counter(h3counter) ")";
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+/* 四级标题：黑体小四号字，左对齐，样式是 1.1.1 标题名 */
+.content-page h4 {
+    font-family: var(--font-body);
+    font-size: var(--font-size-h3); /* 四号字 */
+    font-weight: bold;
+    text-align: left;
+    margin: 0.8em 0 0.5em 0;
+    text-indent: 1.5em;
+    counter-increment: h4counter;
+    counter-reset: h5counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.content-page h4::before {
+    content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) " ";
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+/* 五级标题：黑体小四号字，左对齐，样式是 1.1.1.1 标题名 */
+.content-page h5 {
+    font-family: var(--font-body);
+    font-size: var(--font-size-h4); /* 小四号字 */
+    font-weight: bold;
+    text-align: left;
+    margin: 0.7em 0 0.4em 0;
+    text-indent: 2em;
+    counter-increment: h5counter;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.content-page h5::before {
+    content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) "." counter(h5counter) " ";
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+/* 自动编号样式 */
+.paper-content {
+    counter-reset: section;
+}
+
+.paper-content h2 {
+    counter-reset: subsection;
+}
+
+.paper-content h3 {
+    counter-reset: subsubsection;
+}
+
+.auto-number h2:before {
+    counter-increment: section;
+    content: counter(section) ". ";
+}
+
+/* 禁用自动编号类中的三级标题编号，使用content-page中的编号样式 */
+.auto-number h3:before {
+    content: none;
+}

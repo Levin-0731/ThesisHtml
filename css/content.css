@@ -1,0 +1,171 @@
+/* content.css - 文本内容样式 */
+
+/* 正文样式设置 */
+.content-page p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-indent: 2em;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    margin-bottom: 0;
+    margin-top: 0;
+    display: block;
+}
+
+/* 强制所有空白元素不影响行距 */
+.content-page br, 
+.content-page p:empty {
+    display: none;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* 强制所有段落之间没有额外的间距 */
+.content-page p + p {
+    margin-top: 0 !important;
+}
+
+/* 消除所有段落之间的空白行影响 */
+.content-page br {
+    display: none;
+    line-height: 0;
+    height: 0;
+}
+
+/* 特殊处理带有strong标签的段落 */
+.content-page p strong {
+    line-height: 1.5;
+    display: inline;
+    vertical-align: baseline;
+}
+
+/* 强制所有段落之间没有额外的间距 */
+.content-page p {
+    margin-bottom: 0 !important;
+}
+
+/* 强制标题后的段落和列表没有额外的间距 */
+.content-page h1 + p,
+.content-page h2 + p,
+.content-page h3 + p,
+.content-page h1 + ul,
+.content-page h2 + ul,
+.content-page h3 + ul {
+    margin-top: 0 !important;
+}
+
+/* 特别处理研究内容部分 - 使用类选择器而非:contains */
+.content-page h2 + p + p {
+    margin-top: 0 !important;
+}
+
+/* 有序列表样式 */
+.content-page ol {
+    padding-left: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-align: left;
+}
+
+.content-page ol li {
+    position: relative;
+    text-indent: 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* 无序列表样式 */
+.content-page ul {
+    padding-left: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-align: left;
+}
+
+.content-page ul li {
+    position: relative;
+    text-indent: 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* 参考文献 */
+.content-page .references {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    text-indent: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.5;
+}
+
+/* 自动编号列表 */
+ol.auto-number-list {
+    counter-reset: item;
+    list-style-type: none;
+    padding-left: 2em;
+}
+
+ol.auto-number-list li {
+    counter-increment: item;
+    position: relative;
+}
+
+ol.auto-number-list li:before {
+    content: counter(item) ". ";
+    position: absolute;
+    left: -2em;
+}
+
+/* 论文内容样式 */
+.paper-content p {
+    margin-bottom: var(--paragraph-spacing);
+    text-indent: 2em;
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.paper-content .keywords {
+    margin: 15px 0;
+    text-indent: 0;
+}
+
+.paper-content ul,
+.paper-content ol {
+    margin: 10px 0;
+    padding-left: 2em;
+}
+
+.paper-content li {
+    margin-bottom: 5px;
+}
+
+.paper-content .references-list {
+    padding-left: 2em;
+}
+
+.paper-content .references-list li {
+    margin-bottom: 8px;
+    text-indent: -2em;
+    padding-left: 2em;
+}
+
+/* 缩进样式 */
+.indent-1 {
+    padding-left: 2em;
+}
+
+.indent-2 {
+    padding-left: 4em;
+}
+
+.indent-3 {
+    padding-left: 6em;
+}

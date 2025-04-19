@@ -1,0 +1,38 @@
+/* layout.css - 布局容器样式 */
+
+/* 布局容器 */
+.paper-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    padding: 20px;
+    overflow: hidden; /* 仅防止整体容器滚动，内部元素可滚动 */
+}
+
+.document-container {
+    flex: 1;
+    overflow: auto; /* 保持auto以允许滚动 */
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    background-color: var(--page-background);
+    height: calc(100vh - 60px); /* 设置高度为视口高度减去控制区高度 */
+}
+
+/* 内容页样式 */
+#pages-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 70px;
+    overflow-y: auto; /* 添加垂直滚动 */
+}
+
+/* 可滚动内容容器 */
+.scrollable-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
