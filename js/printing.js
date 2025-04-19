@@ -50,15 +50,53 @@ function preparePrintView() {
         pagesContainer.dataset.originalStyle = pagesContainer.getAttribute('style') || '';
         pagesContainer.style.gap = '0';
         pagesContainer.style.paddingBottom = '0';
+        pagesContainer.style.overflow = 'visible';
     }
     
     // 调整页面样式
-    const pages = document.querySelectorAll('.page');
+    const pages = document.querySelectorAll('.content-page');
     pages.forEach(page => {
         page.dataset.originalStyle = page.getAttribute('style') || '';
         page.style.margin = '0';
         page.style.boxShadow = 'none';
+        page.style.overflow = 'visible';
+        page.style.height = 'auto';
     });
+    
+    // 确保所有内容元素可见
+    document.querySelectorAll('ol, ul, li, p, div').forEach(element => {
+        element.style.pageBreakInside = 'avoid';
+        element.style.breakInside = 'avoid';
+        element.style.overflow = 'visible';
+    });
+    
+    // 强制应用打印样式
+    const style = document.createElement('style');
+    style.id = 'print-force-styles';
+    style.innerHTML = `
+        @media print {
+            body, html {
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .document-container, .paper-container, #pages-container, .scrollable-content {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+            .content-page {
+                height: auto !important;
+                min-height: 0 !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            ol, ul, li {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 /**
@@ -67,6 +105,12 @@ function preparePrintView() {
 function restoreView() {
     // 移除打印样式类
     document.body.classList.remove('printing');
+    
+    // 移除强制打印样式
+    const printStyle = document.getElementById('print-force-styles');
+    if (printStyle) {
+        printStyle.parentNode.removeChild(printStyle);
+    }
     
     // 恢复非打印元素
     const nonPrintableElements = document.querySelectorAll('.toc-panel, .controls');
@@ -87,7 +131,7 @@ function restoreView() {
     }
     
     // 恢复页面样式
-    const pages = document.querySelectorAll('.page');
+    const pages = document.querySelectorAll('.content-page');
     pages.forEach(page => {
         if (page.dataset.originalStyle) {
             page.setAttribute('style', page.dataset.originalStyle);
@@ -95,6 +139,13 @@ function restoreView() {
         } else {
             page.style = '';
         }
+    });
+    
+    // 恢复内容元素样式
+    document.querySelectorAll('ol, ul, li, p, div').forEach(element => {
+        element.style.pageBreakInside = '';
+        element.style.breakInside = '';
+        element.style.overflow = '';
     });
     
     // 恢复滚动位置

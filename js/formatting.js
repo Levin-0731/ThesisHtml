@@ -53,9 +53,6 @@ function processHeadings() {
     // 查找所有标题元素
     const contentPages = document.querySelectorAll('.content-page');
     
-    // 初始化标题计数器
-    const counters = { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0 };
-    
     // 遍历每个内容页
     contentPages.forEach(page => {
         // 跳过封面页
@@ -71,108 +68,24 @@ function processHeadings() {
             const tagName = heading.tagName.toLowerCase();
             const level = parseInt(tagName.substring(1));
             
-            // 生成标题编号
-            let prefix = '';
-            
-            if (level === 1) {
-                // 一级标题特殊处理，可以使用中文数字
-                counters.h1++;
-                counters.h2 = 0;
-                counters.h3 = 0;
-                counters.h4 = 0;
-                counters.h5 = 0;
-                
-                heading.style.fontFamily = 'var(--font-title)';
-                heading.style.fontSize = 'var(--font-size-h1)';
-                heading.style.fontWeight = 'bold';
-                heading.style.textAlign = 'center';
-                heading.style.margin = '1.5em 0 1em 0';
-                
-                // 一级标题使用中文数字编号
-                const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
-                if (counters.h1 <= 10) {
-                    prefix = chineseNumbers[counters.h1 - 1] + '、';
-                } else if (counters.h1 <= 19) {
-                    prefix = '十' + (counters.h1 > 10 ? chineseNumbers[counters.h1 - 11] : '') + '、';
-                } else {
-                    prefix = counters.h1 + '、';
-                }
-            } else if (level === 2) {
-                // 二级标题
-                counters.h2++;
-                counters.h3 = 0;
-                counters.h4 = 0;
-                counters.h5 = 0;
-                // 移除JavaScript编号，使用CSS编号
-                prefix = '';
-                
-                heading.style.fontFamily = 'var(--font-kai)';
-                heading.style.fontSize = 'var(--font-size-h2)';
-                heading.style.fontWeight = 'bold';
-                heading.style.textAlign = 'left';
-                heading.style.margin = '1.2em 0 0.8em 0';
-            } else if (level === 3) {
-                // 三级标题
-                counters.h3++;
-                counters.h4 = 0;
-                counters.h5 = 0;
-                // 修改为与CSS一致的简单阿拉伯数字编号
-                prefix = counters.h3 + '. ';
-                
-                heading.style.fontFamily = 'var(--font-body)';
-                heading.style.fontSize = 'var(--font-size-h3)';
-                heading.style.fontWeight = 'bold';
-                heading.style.textAlign = 'left';
-                heading.style.margin = '1em 0 0.6em 0';
-                heading.style.textIndent = '1em';
-            } else if (level === 4) {
-                // 四级标题
-                counters.h4++;
-                counters.h5 = 0;
-                prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + ' ';
-                
-                heading.style.fontFamily = 'var(--font-body)';
-                heading.style.fontSize = 'var(--font-size-h4)';
-                heading.style.fontWeight = 'bold';
-                heading.style.textAlign = 'left';
-                heading.style.margin = '0.8em 0 0.5em 0';
-                heading.style.textIndent = '1.5em';
-            } else if (level === 5) {
-                // 五级标题
-                counters.h5++;
-                prefix = counters.h2 + '.' + counters.h3 + '.' + counters.h4 + '.' + counters.h5 + ' ';
-                
-                heading.style.fontFamily = 'var(--font-body)';
-                heading.style.fontSize = 'var(--font-size-h5)';
-                heading.style.fontWeight = 'bold';
-                heading.style.textAlign = 'left';
-                heading.style.margin = '0.7em 0 0.4em 0';
-                heading.style.textIndent = '2em';
-            }
-            
-            // 存储原始文本，不包含编号
+            // 存储原始文本，不包含编号 (CSS会添加编号)
             if (!heading.hasAttribute('data-original-text')) {
                 heading.setAttribute('data-original-text', heading.textContent);
             }
             
-            // 添加编号（除了一级标题）
-            if (level > 1) {
-                heading.textContent = prefix + heading.getAttribute('data-original-text');
-            }
-            
             // 设置数据属性以便于引用
             heading.setAttribute('data-level', level);
-            heading.setAttribute('data-number', prefix.trim());
+            
+            // 通过CSS计数器自动添加编号，这里不再手动添加
         });
         
         // 处理段落（宋体小四号字，首行缩进两字符）
+        // 现在通过CSS处理，这里只添加必要的类
         const paragraphs = page.querySelectorAll('p');
         paragraphs.forEach(p => {
-            p.style.fontFamily = 'var(--font-body)';
-            p.style.fontSize = 'var(--font-size-body)';
-            p.style.textIndent = '2em';
-            p.style.marginBottom = '0.8em';
-            p.style.lineHeight = '1.5';
+            if (!p.classList.contains('no-indent')) {
+                p.classList.add('indented-paragraph');
+            }
         });
     });
 }
